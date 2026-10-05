@@ -1,0 +1,1620 @@
+{
+  "name": "VS",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "f6051aa2-2377-4ced-b557-c05068fb3c7e",
+        "options": {}
+      },
+      "id": "8f5984c9-ea11-4313-94b4-bf0ceeb579db",
+      "name": "Webhook Trigger (Inicio)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -608,
+        -176
+      ],
+      "webhookId": "f6051aa2-2377-4ced-b557-c05068fb3c7e"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "base_dir",
+              "value": "/files/videos/edicion_ia/cocina_tecnologica"
+            },
+            {
+              "name": "channel_name",
+              "value": "La Cocina Tecnológica del Pueblo"
+            },
+            {
+              "name": "channel_niche",
+              "value": "electrodomésticos de cocina, freidoras de aire, robots de cocina, cafeteras y utensilios para cocinar"
+            },
+            {
+              "name": "affiliate_tag",
+              "value": "cocina_tag-21"
+            },
+            {
+              "name": "telegram_chat_id",
+              "value": "YOUR_TELEGRAM_CHAT_ID"
+            },
+            {
+              "name": "category_id",
+              "value": "26"
+            },
+            {
+              "name": "video_format",
+              "value": "vs"
+            }
+          ],
+          "number": [
+            {
+              "name": "limit",
+              "value": 2
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "816b6cac-44d1-4a4e-8a27-388a5f7dfeba",
+      "name": "Configuración Parámetros",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "command": "=python3 tools/amazon_cocina_scraper.py --query \"{{ $json.search_query }}\" --canal \"{{ $json.canal_nombre }}\" --base_dir \"{{ $('Configuración Parámetros').first().json.base_dir }}\" --affiliate_tag \"{{ $('Configuración Parámetros').first().json.affiliate_tag }}\""
+      },
+      "id": "19c790e3-bc0f-4d54-af9c-2bdc2bcfd51d",
+      "name": "1. Scraper Amazon VS (2 Productos + Reseñas)",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        288,
+        -80
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let scraperJson = $('1b. Parsear Scraper').first().json || {};\nlet tematicaJson = $('0b. Parsear Temática').first().json || {};\n\nlet p_dir = scraperJson.project_dir || tematicaJson.project_dir || '';\nlet d_path = scraperJson.data_json_path || (p_dir ? p_dir + '/data.json' : '');\nlet p_text = scraperJson.promptText || '';\nlet d_obj = scraperJson.data || {};\n\nreturn [{\n    json: {\n        data: d_obj,\n        project_dir: p_dir,\n        data_json_path: d_path,\n        promptText: p_text,\n        format: scraperJson.format || 'vs',\n        product_a: scraperJson.product_a || {},\n        product_b: scraperJson.product_b || {}\n    }\n}];"
+      },
+      "id": "0698b4f5-9f72-4167-9eb7-0b16efee61c9",
+      "name": "2. Preparar Prompt Guion IA",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2432,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.promptText }}",
+        "options": {
+          "systemMessage": "Eres un guionista profesional experto en vídeos comparativos A vs B de YouTube en español sobre productos de Amazon.\nEscribe guiones entretenidos, muy informativos y fluidos.\n\nPSICOLOGÍA DE VENTAS QUE DEBES APLICAR:\n- LOSS AVERSION: El espectador debe sentir que puede cometer un ERROR COSTOSO si compra sin ver este vídeo.\n- SOCIAL PROOF: Menciona opiniones y valoraciones reales de compradores de cada marca.\n- ANCHORING: Presenta primero las prestaciones y precio de cada producto de forma objetiva.\n- AIDA: El HOOK capta atención con el dilema entre ambas marcas.\n\nREGLAS OBLIGATORIAS:\n1. Escribe el texto en ESPAÑOL de España.\n2. NO utilices emojis en ningún campo.\n3. Devuelve ÚNICAMENTE el objeto JSON crudo sin formato de bloque de código markdown (NO escribas triple comilla ni json). Comienza directamente con { y termina con }.\nQueda TERMINANTEMENTE PROHIBIDO usar comillas dobles (\") dentro de los textos. Usa comillas simples ('') para citas o medidas. Devuelve ÚNICAMENTE el JSON estructurado válido."
+        }
+      },
+      "id": "b7701b98-75bc-4157-b5f0-6ca5c656c819",
+      "name": "3. Generador de Guiones IA (Ollama)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2688,
+        -224
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": "qwen3.8:27b",
+        "options": {
+          "temperature": 0.6,
+          "keepAlive": "0s",
+          "numCtx": 12288,
+          "format": "json"
+        }
+      },
+      "id": "b8e40b10-abee-4f04-9748-366c95b16af0",
+      "name": "Modelo Ollama (Qwen 3.8 27B)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        2576,
+        -64
+      ],
+      "credentials": {
+        "ollamaApi": {
+          "id": "ollama-credential-id",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\"type\":\"object\",\"properties\":{\"hook\":{\"type\":\"string\",\"description\":\"Hook introductorio de la comparativa A vs B\"},\"product_a_overview\":{\"type\":\"string\",\"description\":\"Análisis detallado del Producto A\"},\"product_a_reviews\":{\"type\":\"string\",\"description\":\"Opiniones y reseñas reales de compradores del Producto A\"},\"product_b_overview\":{\"type\":\"string\",\"description\":\"Análisis detallado del Producto B\"},\"product_b_reviews\":{\"type\":\"string\",\"description\":\"Opiniones y reseñas reales de compradores del Producto B\"},\"comparison\":{\"type\":\"string\",\"description\":\"Comparativa directa cara a cara sin declarar un ganador\"},\"outro\":{\"type\":\"string\",\"description\":\"Cierre pidiendo opinión a la audiencia\"}},\"required\":[\"hook\",\"product_a_overview\",\"product_a_reviews\",\"product_b_overview\",\"product_b_reviews\",\"comparison\",\"outro\"]}"
+      },
+      "id": "f8a7d346-a7cd-4baa-b04b-90fbc20f60ed",
+      "name": "Parser de Estructura JSON",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2688,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "command": "=p_dir=\"{{ $('1b. Parsear Scraper').first().json.project_dir || $('0b. Parsear Temática').first().json.project_dir }}\"\naff_tag=\"{{ $('Configuración Parámetros').first().json.affiliate_tag }}\"\ncat << 'EOF' | python3 tools/save_vs_script.py \"$p_dir\" --affiliate_tag \"$aff_tag\"\n{{ JSON.stringify($json) }}\nEOF"
+      },
+      "id": "b1928353-67b7-4996-b42f-e6ef0c5e3113",
+      "name": "4. Guardar Guion JSON",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        3152,
+        -224
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=python3 tools/kokoro_vs_tts.py --script_json \"{{ $('4. Guardar Guion JSON').first().json.project_dir || $('0b. Parsear Temática').first().json.project_dir }}/data.json\""
+      },
+      "id": "be0e244f-83a3-4d94-9090-d75c4494aea1",
+      "name": "5. Generar Locución y Subtítulos por Producto (TTS)",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        3376,
+        -224
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=python3 -c \"print('intro rendered in VS pipeline')\""
+      },
+      "id": "eb222e9d-99c2-40fc-b7ec-60ab667a5587",
+      "name": "6. Renderizar Vídeo Intro/Hook",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        3600,
+        -224
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=python3 tools/render_cocina_video.py \"{{ $('4. Guardar Guion JSON').first().json.project_dir || $('0b. Parsear Temática').first().json.project_dir }}\""
+      },
+      "id": "1b3af558-be43-441b-8cbd-505ba077d4be",
+      "name": "7. Renderizar Vídeos Productos A y B",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        3824,
+        -224
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=python3 -c \"print('outro rendered in VS pipeline')\""
+      },
+      "id": "6f700286-4d18-4f9d-a4fe-4b0cce94c22f",
+      "name": "8. Renderizar Vídeo Cierre/Outro",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        4128,
+        -224
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=python3 tools/render_cocina_video.py \"{{ $('2. Preparar Prompt Guion IA').first().json.project_dir }}\" --mode concat"
+      },
+      "id": "c9399b04-44e8-4d1c-a344-ef5d3d9907d4",
+      "name": "9. Concatenar Vídeo Final NAS",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        4416,
+        -224
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=python3 tools/save_vs_youtube_metadata.py \"{{ $('1b. Parsear Scraper').first().json.project_dir }}\" --affiliate_tag \"{{ $('Configuración Parámetros').first().json.affiliate_tag }}\""
+      },
+      "id": "fa7ac8ef-1c22-4b75-ae7e-76a3ee6de5ab",
+      "name": "10. Generar Metadatos YouTube",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        736,
+        -80
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=python3 tools/generate_cocina_youtube_tags.py \"{{ $('0b. Parsear Temática').first().json.project_dir || $('1b. Parsear Scraper').first().json.project_dir }}\""
+      },
+      "id": "0feaf751-372f-481e-a962-62186070d635",
+      "name": "YT Keyword Research SEO",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        960,
+        -80
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\"type\": \"object\", \"properties\": {\"title\": {\"type\": \"string\", \"description\": \"T\\u00edtulo SEO optimizado para YouTube (50-60 chars) con la keyword principal y 2026\"}, \"description\": {\"type\": \"string\", \"description\": \"Descripci\\u00f3n completa optimizada con intro, timestamps intactos, links intactos, aviso afiliados y 3 hashtags\"}, \"tags\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}, \"description\": \"Array de 15-25 tags de b\\u00fasqueda relevantes (short-head, long-tail, marcas y intenciones de compra en espa\\u00f1ol)\"}}, \"required\": [\"title\", \"description\", \"tags\"]}"
+      },
+      "id": "68dc33f1-315d-4df6-9ca8-0181808a6341",
+      "name": "YT Parser SEO JSON",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1472,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ERES un experto en YouTube SEO y marketing de afiliados Amazon para contenido en español. Genera metadatos optimizados para YouTube.\n\nCANAL:\n- Nombre: {{ $json.channel_name }}\n- Nicho: {{ $json.channel_niche }}\n\nDATOS DEL VÍDEO:\n- Temática/Query: {{ $json.query }}\n- Título actual de referencia: {{ $json.current_title }}\n- Productos: {{ $json.product_names.join(' vs ') }}\n- Precios: {{ $json.product_prices.join(', ') }}\n\nDESCRIPCIÓN BASE DE REFERENCIA:\n{{ $json.current_description }}\n\nINSTRUCCIONES DE PSICOLOGÍA DE MARKETING:\n\n1. TÍTULO (55-65 caracteres):\n   - Usa la estructura de comparativa o enfrentamiento: \"{{ $json.current_title }}\" o variación con LOSS AVERSION / CURIOSITY GAP.\n   - No incluyas números de ranking ficticios si es una comparativa A vs B.\n   - Mantén el año 2026 e intención de compra clara.\n\n2. DESCRIPCIÓN:\n   - Párrafo inicial de alto gancho enfocado en ayudar a decidir entre ambas opciones.\n   - MANTENER la estructura de la descripción base.\n   - Añadir 3 hashtags relevantes al final.\n\nREGLAS ESTRICTAS:\n- Devuelve ÚNICAMENTE el JSON estructurado con las 2 claves requeridas: title, description.",
+        "options": {
+          "systemMessage": "Eres un especialista en YouTube SEO para el mercado hispanohablante. Generas metadatos que maximizan CTR y posicionamiento orgánico. Conoces las estrategias de afiliados de Amazon y sabes qué intenciones de búsqueda atraen compradores.\nAplicas psicología de marketing: Loss Aversion en títulos (\"NO compres X sin ver esto\"), Social Proof en descripciones (número de valoraciones, bestseller), y Anchoring (rango de precios para que el espectador perciba valor). Tu objetivo es maximizar CTR del thumbnail+título y convertir vistas en clicks de afiliado."
+        }
+      },
+      "id": "fa8da0f3-9956-40d4-a7b3-ed4ae2709ef9",
+      "name": "YT Optimizador SEO (Ollama)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1408,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "command": "=p_dir=\"{{ $('1b. Parsear Scraper').first().json.project_dir || $('0b. Parsear Temática').first().json.project_dir }}\"\ncat << 'EOF' > \"$p_dir/youtube_metadata.json\"\n{{ JSON.stringify($json) }}\nEOF\npython3 tools/save_vs_youtube_metadata.py \"$p_dir\" --affiliate_tag \"{{ $('Configuración Parámetros').first().json.affiliate_tag }}\"\ncat \"$p_dir/youtube_metadata.json\""
+      },
+      "id": "ef0b8725-825d-4e88-8b1c-f7e1133c07b6",
+      "name": "YT Guardar Metadatos Optimizados",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        -80
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $json.title }}",
+        "regionCode": "ES",
+        "categoryId": "26",
+        "options": {
+          "description": "={{ $json.description }}",
+          "privacyStatus": "public",
+          "publicStatsViewable": false,
+          "selfDeclaredMadeForKids": false,
+          "tags": "={{ $json.tags_str }}"
+        }
+      },
+      "id": "ff219d51-6441-4ed7-8b97-baf54c6d94a0",
+      "name": "YT Upload YouTube",
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        5088,
+        -224
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "alwaysOutputData": true,
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-credential-id",
+          "name": "cocina"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "359ecb91-3156-4cf5-9637-ac39b175cf2d",
+      "name": "Error Trigger Global",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -608,
+        -656
+      ]
+    },
+    {
+      "parameters": {
+        "command": "=python3 -c \"import json; f=open('/tmp/n8n_agent_notifications.log', 'a'); f.write(json.dumps({'status': 'ERROR', 'workflow': 'WfAmazonRank001'}) + '\\n'); f.close()\""
+      },
+      "id": "9616bd22-5ba5-4000-9ac9-da98f24f4418",
+      "name": "Avisar Error a Agente",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        -560
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "command": "=python3 -c \"import json; f=open('/tmp/n8n_agent_notifications.log', 'a'); f.write(json.dumps({'status': 'SUCCESS', 'line': 'YOUTUBE_PUBLISH', 'workflow': 'WfAmazonRank001', 'video_id': '{{ $json.id }}'}) + '\\n'); f.close()\""
+      },
+      "id": "b9b89446-9acc-4470-9d10-9710d3fbe8cf",
+      "name": "Avisar Éxito YouTube a Agente",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        6432,
+        -80
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "filePath": "={{ ($('2. Preparar Prompt Guion IA').first().json.project_dir || $('1b. Parsear Scraper').first().json.project_dir).replace('/files', '/files') + '/RENDER_FINAL_AMAZON.mp4' }}"
+      },
+      "id": "1cb63e0c-a8cd-4fdd-9bac-a1cf849751f5",
+      "name": "YT Convertir a Binario n8n",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        4640,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function parseAiJson(val) {\n    if (!val) return {};\n    if (typeof val === 'object') return val;\n    let s = String(val).trim();\n    s = s.replace(/^```(?:json)?\\s*/i, '').replace(/\\s*```$/g, '').trim();\n    try {\n        return JSON.parse(s);\n    } catch (e) {\n        let match = s.match(/(\\{[\\s\\S]*\\})/);\n        if (match) {\n            try { return JSON.parse(match[1]); } catch (e2) {}\n        }\n    }\n    return {};\n}\n\nlet stdoutStr = $json.stdout || '';\nlet parsedMeta = parseAiJson(stdoutStr);\n\nif (parsedMeta.output) {\n    let inner = parseAiJson(parsedMeta.output);\n    if (inner && typeof inner === 'object') {\n        parsedMeta = Object.assign({}, parsedMeta, inner);\n    }\n}\n\nlet prepInput = {};\ntry {\n    prepInput = $('YT Preparar Input Ollama').item.json;\n} catch(e1) {}\n\nlet title = parsedMeta.title || parsedMeta.youtube_title || prepInput.current_title || 'TOP MEJORES PRODUCTOS DE AMAZON 2026';\ntitle = title.replace(/_/g, ' ').replace(/\\s+/g, ' ').trim();\n\nlet description = parsedMeta.description || parsedMeta.youtube_description || prepInput.current_description || '';\n\n// Si Ollama alucinó texto marcador como [LINKS DE AFILIADO] o [Producto], restaurar la descripción real estructurada\nif (description.includes('[LINKS DE AFILIADO]') || description.includes('[Producto]') || !description.includes('http')) {\n    if (prepInput.current_description && prepInput.current_description.includes('http')) {\n        description = prepInput.current_description;\n    }\n}\n\ndescription = description.replace(/_/g, ' ').trim();\n\nreturn [{\n    json: {\n        title: title,\n        description: description,\n        project_dir: prepInput.project_dir || $('0b. Parsear Temática').first().json.project_dir\n    }\n}];"
+      },
+      "id": "204b701f-b290-44a0-9002-436c5097ce3d",
+      "name": "YT Parsear Metadatos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1984,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "let projectDir = '';\ntry {\n    projectDir = $('1b. Parsear Scraper').first().json.project_dir || $('0b. Parsear Temática').first().json.project_dir || '';\n} catch (e1) {}\n\nlet containerDir = (projectDir || '').replace('/files', '/files');\nlet fs = require('fs');\nlet metaFile = containerDir + '/youtube_metadata.json';\n\nlet realTitle = '';\nlet realDesc = '';\n\nif (fs.existsSync(metaFile)) {\n    try {\n        let meta = JSON.parse(fs.readFileSync(metaFile, 'utf-8'));\n        realTitle = meta.youtube_title || meta.title || '';\n        realDesc = meta.youtube_description || meta.description || '';\n    } catch(e2) {}\n}\n\nif (!realDesc) {\n    let txtFile = containerDir + '/youtube_metadata.txt';\n    if (fs.existsSync(txtFile)) {\n        try {\n            realDesc = fs.readFileSync(txtFile, 'utf-8');\n        } catch(e3) {}\n    }\n}\n\nlet q = '';\ntry {\n    q = $('0b. Parsear Temática').first().json.search_query || $('1b. Parsear Scraper').first().json.query || '';\n} catch (e4) {}\n\nlet prods = [];\nlet dataJsonPath = containerDir + '/data.json';\nif (fs.existsSync(dataJsonPath)) {\n    try {\n        let dataObj = JSON.parse(fs.readFileSync(dataJsonPath, 'utf-8'));\n        prods = dataObj.products || [];\n        if (!q) q = dataObj.query || '';\n    } catch(e5) {}\n}\n\nlet channelNiche = '';\nlet channelName = '';\ntry {\n    channelName = $('Configuración Parámetros').first().json.channel_name || '';\n    channelNiche = $('Configuración Parámetros').first().json.channel_niche || '';\n} catch(e6) {}\n\nif (!q) q = channelNiche || 'PRODUCTOS DESTACADOS';\n\nlet productNames = prods.map(p => p.title || '').filter(t => t.length > 0);\nlet productPrices = prods.map(p => p.price || '').filter(t => t.length > 0);\n\nreturn [{\n    json: {\n        query: q,\n        current_title: realTitle || ('TOP MEJORES ' + q.toUpperCase() + ' EN AMAZON 2026 🏆'),\n        current_description: realDesc,\n        products: prods,\n        product_names: productNames,\n        product_prices: productPrices,\n        channel_name: channelName,\n        channel_niche: channelNiche,\n        project_dir: projectDir\n    }\n}];"
+      },
+      "id": "d9622184-2e58-41b9-bf81-b1444d75bb68",
+      "name": "YT Preparar Input Ollama",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "command": "=python3 tools/random_vs_topic.py --channel_name \"{{ $('Configuración Parámetros').first().json.channel_name }}\" --channel_niche \"{{ $('Configuración Parámetros').first().json.channel_niche }}\" --base_dir \"{{ $('Configuración Parámetros').first().json.base_dir }}\""
+      },
+      "id": "3ff23d04-a1a0-4eae-a33a-8a5ed656224d",
+      "name": "0. Elegir Temática Aleatoria IA",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -80
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=python3 tools/generate_cocina_thumbnail.py \"{{ $('1b. Parsear Scraper').first().json.project_dir || $('0b. Parsear Temática').first().json.project_dir }}\" && echo '{\"status\": \"ok\"}'"
+      },
+      "id": "306316af-1f76-4c37-a376-b4531a468af7",
+      "name": "YT Leer Miniatura SSH",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        5312,
+        -224
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "filePath": "={{ ($('0b. Parsear Temática').first().json.project_dir || $('1b. Parsear Scraper').first().json.project_dir).replace('/files', '/files') + '/thumbnail.jpg' }}"
+      },
+      "id": "fd661d3c-6617-4bc9-adf9-23c8d4b3c9e6",
+      "name": "YT Convertir Miniatura Binario",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        5536,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId=' + ($json.id || $node['YT Upload YouTube'].json.id || $node['YT Upload YouTube'].json.uploadId) }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "image/jpeg"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "id": "cf64ab53-a170-4361-9e73-c7028aa17940",
+      "name": "YT Subir Miniatura YouTube",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5760,
+        -224
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-credential-id",
+          "name": "cocina"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                2,
+                4,
+                0
+              ],
+              "triggerAtHour": 22,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -608,
+        16
+      ],
+      "id": "ad807d43-c659-4b23-b46b-625dc24ca8b5",
+      "name": "Programador Autónomo (Opción A)"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Configuración Parámetros').first().json.telegram_chat_id }}",
+        "text": "={{ $json.telegram_text }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        6208,
+        -224
+      ],
+      "id": "66f038e7-0b0d-46ab-a4ad-552fc18a1cd2",
+      "name": "Notificar Telegram Éxito",
+      "webhookId": "01f5688d-d439-4e0b-9958-08521f2d41d7",
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-credential-id",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let title = '';\ntry { title = $('YT Parsear Metadatos').first().json.title; } catch(e) {}\nif (!title) { title = 'Nuevo Vídeo de Productos 2026'; }\n\nlet uploadId = '';\ntry { uploadId = $('YT Upload YouTube').first().json.uploadId || $('YT Upload YouTube').first().json.id; } catch(e) {}\n\nlet channelName = '';\ntry { channelName = $('Configuración Parámetros').first().json.channel_name; } catch(e1) {}\nif (!channelName) {\n    try { channelName = $('0b. Parsear Temática').first().json.channel_name; } catch(e2) {}\n}\nif (!channelName) { channelName = 'Canal YouTube'; }\n\nlet msg = `🎉 *¡Nuevo vídeo publicado con éxito en YouTube!*\n\n📌 *Título:* ${title}\n🔗 *Ver Vídeo:* https://youtu.be/${uploadId}\n\n📊 *Canal:* ${channelName}`;\n\nreturn [{\n    json: {\n        telegram_text: msg\n    }\n}];"
+      },
+      "id": "22f00607-f7f9-4c94-acbf-f44b13833e44",
+      "name": "YT Preparar Texto Telegram",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5984,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "let stdoutStr = $json.stdout || '';\nlet parsed = {};\ntry {\n    parsed = JSON.parse(stdoutStr);\n} catch (e) {\n    parsed = {};\n}\n\nlet sq = parsed.search_query || '';\nsq = sq.replace(/_/g, ' ').replace(/\\s+/g, ' ').trim();\n\nreturn [{\n    json: {\n        search_query: sq,\n        canal_nombre: parsed.canal_nombre || '',\n        video_slug: parsed.video_slug || '',\n        channel_name: parsed.channel_name || $('Configuración Parámetros').first().json.channel_name || '',\n        project_dir: parsed.video_dir || '',\n        format: parsed.format || $('Configuración Parámetros').first().json.video_format || 'vs'\n    }\n}];"
+      },
+      "id": "3ccc1d35-5254-4b82-82db-c065f23b0da2",
+      "name": "0b. Parsear Temática",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        64,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "let stdoutStr = $json.stdout || '';\nlet parsed = {};\ntry {\n    parsed = JSON.parse(stdoutStr);\n} catch (e) {\n    parsed = {};\n}\n\nlet q = parsed.query || '';\nif (!q) {\n    try { q = $('0b. Parsear Temática').first().json.search_query || ''; } catch(e1) {}\n}\nif (!q) {\n    try { q = $('Configuración Parámetros').first().json.channel_niche || ''; } catch(e2) {}\n}\nif (!q) q = 'productos de amazon';\n\nlet p_dir = parsed.project_dir || '';\nif (!p_dir) {\n    try { p_dir = $('0b. Parsear Temática').first().json.project_dir || ''; } catch(e3) {}\n}\n\nlet channelNiche = '';\ntry { channelNiche = $('Configuración Parámetros').first().json.channel_niche || ''; } catch(e4) {}\n\nlet productA = parsed.product_a || {};\nlet productB = parsed.product_b || {};\n\nif (!productA || !productA.title || !productB || !productB.title) {\n    throw new Error(`[SCRAPER ERROR] El scraper de Amazon no devolvió 2 productos válidos para \"${q}\". Cancelando workflow para evitar vídeo fantasma.`);\n}\n\nlet reviewsAPos = (productA.positive_reviews || []).map(r => r.title + ': ' + r.text).join('\\n');\nlet reviewsANeg = (productA.negative_reviews || []).map(r => r.title + ': ' + r.text).join('\\n');\nlet reviewsBPos = (productB.positive_reviews || []).map(r => r.title + ': ' + r.text).join('\\n');\nlet reviewsBNeg = (productB.negative_reviews || []).map(r => r.title + ': ' + r.text).join('\\n');\n\nlet promptText = `INSTRUCCIÓN DE IDIOMA CRÍTICA: Debes responder EXCLUSIVAMENTE en ESPAÑOL de España. Queda estrictamente PROHIBIDO escribir en inglés.\n\nCrea un guion conciso y directo en ESPAÑOL para un vídeo COMPARATIVO A vs B de YouTube sobre \"${q}\".\n\nOBJETIVO CRÍTICO DE DURACIÓN: El vídeo final debe durar entre 4 y 5 MINUTOS de locución ágil y directa en español (700 a 850 palabras en total). Cero relleno, máxima retención y alta intención de compra.\n\n═══════════════════════════════════════\nPRODUCTO A: ${productA.title || 'Producto A'}\n  Marca: ${productA.brand || 'Marca A'}\n  Precio: ${productA.price || 'Consultar'}\n  Valoración: ${productA.rating || '4.5 de 5'}\n\n  RESEÑAS POSITIVAS reales de compradores:\n  ${reviewsAPos || 'Sin reseñas disponibles'}\n\n  RESEÑAS NEGATIVAS reales de compradores:\n  ${reviewsANeg || 'Sin reseñas disponibles'}\n\n═══════════════════════════════════════\nPRODUCTO B: ${productB.title || 'Producto B'}\n  Marca: ${productB.brand || 'Marca B'}\n  Precio: ${productB.price || 'Consultar'}\n  Valoración: ${productB.rating || '4.5 de 5'}\n\n  RESEÑAS POSITIVAS reales de compradores:\n  ${reviewsBPos || 'Sin reseñas disponibles'}\n\n  RESEÑAS NEGATIVAS reales de compradores:\n  ${reviewsBNeg || 'Sin reseñas disponibles'}\n\n═══════════════════════════════════════\n\nRequisitos estrictos de estructura del guion (TOTAL: 700 a 850 PALABRAS para durar exactamente entre 4 y 5 minutos):\n\n1. hook (70-85 palabras): Gancho de impacto inmediato con aversión a la pérdida y advertencia previa a la compra: '¡Cuidado antes de comprar! Elegir a ciegas entre ${productA.brand || 'Marca A'} y ${productB.brand || 'Marca B'} puede hacerte tirar el dinero si no conoces sus fallos reales y diferencias clave'. Plantea el dilema de compra directo, menciona que analizas reseñas reales y que tienen los enlaces con ofertas activas en el primer comentario fijado.\n\n2. product_a_overview (140-160 palabras): Análisis conciso de ${productA.title || 'Producto A'}: puntos fuertes clave, especificaciones técnicas esenciales, para quién está pensado. Menciona precio y valoración.\n\n3. product_a_reviews (90-110 palabras): Resumen de opiniones reales de compradores de ${productA.brand || 'Marca A'}: aciertos comprobados y quejas recurrentes de usuarios reales.\n\n4. product_b_overview (140-160 palabras): Análisis conciso de ${productB.title || 'Producto B'}: puntos fuertes clave, especificaciones técnicas esenciales, para quién está pensado. Menciona precio y valoración.\n\n5. product_b_reviews (90-110 palabras): Resumen de opiniones reales de compradores de ${productB.brand || 'Marca B'}: aciertos comprobados y quejas recurrentes de usuarios reales.\n\n6. comparison (120-150 palabras): Comparación frente a frente: diferencias de rendimiento, durabilidad y si la diferencia de precio justifica uno sobre el otro.\n\n7. outro (50-75 palabras): REGLA DE ORO DE CONVERSIÓN: VEREDICTO BINARIO CONTUNDENTE. PROHIBIDO decir 'ambas son buenas opciones' o frases neutras y ambiguas. Debes cerrar con una regla de decisión binaria instantánea sin rodeos con la fórmula: 'Veredicto definitivo: Si tu prioridad es [Dolor Principal 1], el ganador indiscutible es ${productA.brand || 'Producto A'}. Pero si buscas [Beneficio Secundario 2], ve directo a por ${productB.brand || 'Producto B'}. Comprueba si sigue el cupón o la oferta activa en el primer comentario fijado aquí abajo.' Pide Like y suscripción.`;\n\n// Build products array for compatibility with rendering pipeline (2 items)\nlet products = [];\nif (productA.asin) {\n    products.push({\n        rank: 1,\n        folder: 'producto_a',\n        asin: productA.asin,\n        title: productA.title || '',\n        price: productA.price || '',\n        rating: productA.rating || '',\n        rating_num: productA.rating_num || 0,\n        has_video: true,\n        video_file: productA.video_file || '',\n        image_file: productA.image_file || '',\n        product_url: productA.product_url || '',\n        brand: productA.brand || ''\n    });\n}\nif (productB.asin) {\n    products.push({\n        rank: 2,\n        folder: 'producto_b',\n        asin: productB.asin,\n        title: productB.title || '',\n        price: productB.price || '',\n        rating: productB.rating || '',\n        rating_num: productB.rating_num || 0,\n        has_video: true,\n        video_file: productB.video_file || '',\n        image_file: productB.image_file || '',\n        product_url: productB.product_url || '',\n        brand: productB.brand || ''\n    });\n}\n\nreturn [{\n    json: {\n        query: q,\n        project_dir: p_dir,\n        data_json_path: p_dir + '/data.json',\n        products: products,\n        product_a: productA,\n        product_b: productB,\n        promptText: promptText,\n        data: parsed,\n        format: 'vs'\n    }\n}];"
+      },
+      "id": "4e45b738-bc0a-4db1-bae0-97130f21021c",
+      "name": "1b. Parsear Scraper",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        512,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "let projectDir = '';\ntry {\n    projectDir = $('1b. Parsear Scraper').first().json.project_dir;\n} catch (e1) {}\n\nif (!projectDir) {\n    try {\n        projectDir = $('0b. Parsear Temática').first().json.project_dir;\n    } catch (e2) {}\n}\n\nif (!projectDir) {\n    try {\n        projectDir = $input.first().json.project_dir;\n    } catch (e3) {}\n}\n\nlet containerDir = (projectDir || '').replace('/files', '/files');\nlet fs = require('fs');\n// ============================================================================\n// 🛡️ PRE-PUBLISH SANITY GATE (COMPROBACIÓN PREVENTIVA DE PUBLICACIÓN HORIZONTAL)\n// ============================================================================\nif (containerDir && fs.existsSync(containerDir)) {\n    let gateErrors = [];\n    const NICHE_BANNED = {\n        'taller': ['barbacoa', 'parrilla', 'bbq', 'pelo', 'cabello', 'afeitad', 'afeitadora', 'cortapelo', 'depilad', 'barba', 'dientes', 'dental', 'cocina', 'vajilla', 'sarten', 'sartén', 'olla', 'aspirador', 'colchon', 'mascota', 'fregadero', 'inodoro', 'champú'],\n        'barberia': ['madera', 'taller', 'taladro', 'sierra', 'bricolaje', 'jardin', 'cesped', 'cocina', 'sarten', 'freidora', 'aspirador', 'fregona', 'limpieza', 'coche'],\n        'cocina': ['taladro', 'sierra', 'amoladora', 'taller', 'pelo', 'afeitad', 'zapato', 'zapatilla', 'aspiradora', 'fregona', 'soldador'],\n        'limpieza': ['sarten', 'sartén', 'olla', 'cocina', 'taladro', 'sierra', 'zapato', 'zapatilla', 'libro', 'novela', 'barberia', 'afeitadora'],\n        'zapateria': ['aspiradora', 'freidora', 'sartén', 'taladro', 'sierra', 'libro', 'novela', 'afeitadora'],\n        'libreria': ['aspiradora', 'freidora', 'taladro', 'zapato', 'afeitadora', 'sarten', 'bateria de cocina']\n    };\n\n    let dirLow = containerDir.toLowerCase();\n    let niche = 'general';\n    if (dirLow.includes('taller') || dirLow.includes('bricolaje')) niche = 'taller';\n    else if (dirLow.includes('barber') || dirLow.includes('afeitad')) niche = 'barberia';\n    else if (dirLow.includes('cocina')) niche = 'cocina';\n    else if (dirLow.includes('limpiez')) niche = 'limpieza';\n    else if (dirLow.includes('zapat') || dirLow.includes('calzad')) niche = 'zapateria';\n    else if (dirLow.includes('librer') || dirLow.includes('libro')) niche = 'libreria';\n\n    let bannedList = NICHE_BANNED[niche] || [];\n\n    // 1. Validación Semántica de Productos desde data.json\n    let dataJsonPath = containerDir + '/data.json';\n    if (fs.existsSync(dataJsonPath)) {\n        try {\n            let dRaw = JSON.parse(fs.readFileSync(dataJsonPath, 'utf8'));\n            let qLow = (dRaw.query || '').toLowerCase();\n            let prods = dRaw.products || [];\n            if (!prods.length && dRaw.product_a && dRaw.product_b) {\n                prods = [dRaw.product_a, dRaw.product_b];\n            }\n            for (let idx = 0; idx < prods.length; idx++) {\n                let pTitle = (prods[idx].title || '').toLowerCase();\n                for (let b of bannedList) {\n                    let re = new RegExp('\\\\b' + b + '\\\\b', 'i');\n                    if (re.test(pTitle) && !qLow.includes(b)) {\n                        gateErrors.push(`[HORIZONTAL] Producto #${idx + 1} ajeno al nicho ${niche}: término prohibido '${b}' en '${prods[idx].title.substring(0, 45)}...'`);\n                    }\n                }\n            }\n        } catch (eData) {\n            gateErrors.push(`Error analizando data.json: ${eData.message}`);\n        }\n    } else {\n        gateErrors.push('data.json no existe en el directorio del proyecto.');\n    }\n\n    // 2. Validación de Vídeo Horizontal Renderizado\n    let horizFiles = ['/RENDER_FINAL_AMAZON.mp4', '/RENDER_FINAL_NAS.mp4'];\n    let videoFound = false;\n    for (let hf of horizFiles) {\n        let vPath = containerDir + hf;\n        if (fs.existsSync(vPath)) {\n            let stat = fs.statSync(vPath);\n            if (stat.size > 1000000) {\n                videoFound = true;\n                break;\n            }\n        }\n    }\n    if (!videoFound) {\n        gateErrors.push('[HORIZONTAL] Vídeo renderizado horizontal ausente o corrupto (< 1MB).');\n    }\n\n    // 3. Validación de Miniatura (solo si ya existe en disco)\n    let thumbPath = containerDir + '/thumbnail.jpg';\n    if (fs.existsSync(thumbPath)) {\n        let tStat = fs.statSync(thumbPath);\n        if (tStat.size < 30000) {\n            gateErrors.push(`[MINIATURA] thumbnail.jpg demasiado ligera (${tStat.size} bytes).`);\n        }\n    }\n\n    if (gateErrors.length > 0) {\n        throw new Error('[PRE-PUBLISH GATE BLOQUEADO - HORIZONTAL] ' + gateErrors.join(' | '));\n    }\n}\nlet title = '';\nlet description = '';\nlet tags_str = '';\nlet pinned_comment = '';\n\n// 1. Intentar desde nodo 'YT Parsear Metadatos'\ntry {\n    let parsedNode = $('YT Parsear Metadatos').first().json;\n    if (parsedNode.title) title = parsedNode.title;\n    if (parsedNode.description) description = parsedNode.description;\n    if (parsedNode.pinned_comment) pinned_comment = parsedNode.pinned_comment;\n} catch(eNode) {}\n\n// 2. Intentar desde nodo 'YT Preparar Input Ollama'\nif (!title || !description || description.includes('[LINKS DE AFILIADO]') || description.includes('[Producto]')) {\n    try {\n        let ollamaInput = $('YT Preparar Input Ollama').first().json;\n        if (!title && ollamaInput.current_title) title = ollamaInput.current_title;\n        if (ollamaInput.current_description && ollamaInput.current_description.includes('http')) {\n            description = ollamaInput.current_description;\n        }\n    } catch(eOllama) {}\n}\n\n// 3. Intentar desde youtube_metadata.json en disco\nlet metaFile = containerDir + '/youtube_metadata.json';\nif (!pinned_comment && fs.existsSync(metaFile)) {\n    try {\n        let metaObj = JSON.parse(fs.readFileSync(metaFile, 'utf-8'));\n        if (metaObj.pinned_comment) pinned_comment = metaObj.pinned_comment;\n    } catch(ePin) {}\n}\nif ((!title || !description || description.includes('[LINKS DE AFILIADO]') || description.includes('[Producto]') || !tags_str) && fs.existsSync(metaFile)) {\n    try {\n        let meta = JSON.parse(fs.readFileSync(metaFile, 'utf-8'));\n        if (!title) title = meta.youtube_title || meta.title || '';\n        if (meta.youtube_description && meta.youtube_description.includes('http')) {\n            description = meta.youtube_description;\n        }\n        if (!tags_str) tags_str = meta.tags_str || (meta.tags ? meta.tags.join(',') : '');\n        if (meta.pinned_comment) pinned_comment = meta.pinned_comment;\n    } catch(eFile) {}\n}\n\n// 4. Intentar desde youtube_metadata.txt en disco si la descripción sigue sin ser válida\nlet txtFile = containerDir + '/youtube_metadata.txt';\nif ((!description || description.includes('[LINKS DE AFILIADO]') || description.includes('[Producto]') || !description.includes('http')) && fs.existsSync(txtFile)) {\n    try {\n        let txtContent = fs.readFileSync(txtFile, 'utf-8');\n        if (txtContent.includes('DESCRIPCIÓN DE YOUTUBE')) {\n            description = txtContent.split('DESCRIPCIÓN DE YOUTUBE')[1].replace(/═+/g, '').trim();\n        } else if (txtContent.includes('DESCRIPCIÓN:')) {\n            description = txtContent.split('DESCRIPCIÓN:')[1].trim();\n        } else {\n            description = txtContent.trim();\n        }\n    } catch(eTxt) {}\n}\n\n// 5. Fallback tags_str desde nodo de etiquetas o input\nif (!tags_str) {\n    try {\n        let tagsNode = $('YT Generador de Tags SEO').first().json;\n        if (tagsNode.stdout) {\n            let tObj = JSON.parse(tagsNode.stdout);\n            tags_str = tObj.tags_str || '';\n        }\n    } catch(eT) {}\n}\n\n// 6. Generación de título de respaldo\nif (!title || title.endsWith('...') || title.length < 15 || title.includes('_')) {\n    try {\n        let scraper = $('1b. Parsear Scraper').first().json || {};\n        let productA = scraper.product_a || {};\n        let productB = scraper.product_b || {};\n        let brandA = (productA.brand || '').toUpperCase().trim();\n        let brandB = (productB.brand || '').toUpperCase().trim();\n        let q = (scraper.query || (scraper.search_query || '')).replace(/_/g, ' ').trim();\n        if (brandA && brandB && brandA !== brandB) {\n            title = brandA + ' vs ' + brandB + (q ? ' | ' + q.charAt(0).toUpperCase() + q.slice(1) : '') + ' ¿Cuál Elegir?';\n        } else if (q) {\n            title = 'TOP COMPARATIVA | ' + q.charAt(0).toUpperCase() + q.slice(1) + ' 2026 ⚔️';\n        }\n    } catch(e5) {}\n}\nif (!title || title.length < 10) {\n    title = 'Comparativa de Productos 2026 ⚔️';\n}\n\ntitle = title.replace(/_/g, ' ').replace(/\\s+/g, ' ').trim();\nif (title.length > 95) {\n    title = title.substring(0, 92).trim();\n}\n\nif (description) {\n    description = description.replace(/_/g, ' ').trim();\n}\n\n\n// ANCLAJE VISUAL DE ALTO CTR PARA COMENTARIO FIJADO\nlet pA = {};\nlet pB = {};\ntry { pA = $('1b. Parsear Scraper').first().json.product_a || {}; } catch(ePa) {}\ntry { pB = $('1b. Parsear Scraper').first().json.product_b || {}; } catch(ePb) {}\nlet affTag = '';\ntry { affTag = $('Configuración Parámetros').first().json.affiliate_tag || ''; } catch(eTag) {}\nlet urlA = pA.asin ? `https://www.amazon.es/dp/${pA.asin}?tag=${affTag}` : (pA.product_url || '');\nlet urlB = pB.asin ? `https://www.amazon.es/dp/${pB.asin}?tag=${affTag}` : (pB.product_url || '');\nlet titleA = (pA.title || 'Opción A').split(':')[0].substring(0, 45).trim();\nlet titleB = (pB.title || 'Opción B').split(':')[0].substring(0, 45).trim();\n\npinned_comment = `🥇 MEJOR OPCIÓN CALIDAD/PRECIO:\n👉 ${titleA}: ${urlA}\n\n⚡ MÁXIMA POTENCIA / GAMA TOP:\n👉 ${titleB}: ${urlB}\n\n📌 Los precios y ofertas pueden cambiar según disponibilidad de Amazon Prime.`;\n\nconst items = $input.all();\nconst outItems = [];\nfor (let item of items) {\n    let newItem = {\n        json: {\n            ...item.json,\n            title: title,\n            description: description,\n            tags_str: tags_str,\n            pinned_comment: pinned_comment\n        }\n    };\n    if (item.binary) newItem.binary = item.binary;\n    outItems.push(newItem);\n}\nreturn outItems;\n\nif (tags_str) {\n    let tagArr = tags_str.split(',');\n    let safeTags = [];\n    let curLen = 0;\n    for (let t of tagArr) {\n        let tClean = t.trim();\n        if (!tClean) continue;\n        let tLen = tClean.length + (tClean.includes(' ') ? 2 : 0) + (safeTags.length ? 1 : 0);\n        if (curLen + tLen > 380) break;\n        safeTags.push(tClean);\n        curLen += tLen;\n    }\n    tags_str = safeTags.join(',');\n}"
+      },
+      "id": "f294e6b2-edb8-499a-8110-8d297365816c",
+      "name": "YT Preparar Payload Upload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4864,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "command": "=python3 tools/generate_cocina_youtube_tags.py \"{{ $('0b. Parsear Temática').first().json.project_dir || $('1b. Parsear Scraper').first().json.project_dir }}\""
+      },
+      "id": "0b109a31-3fa6-4450-99d2-91f0258bffbf",
+      "name": "YT Generador de Tags SEO",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        2208,
+        -80
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=python3 tools/kokoro_tts.py --script_json \"{{ $('Short 0. Preparar Prompt Short IA').first().json.project_dir || $('1b. Parsear Scraper').first().json.project_dir }}/short_script.json\" --mode short"
+      },
+      "id": "3603af34-abff-437b-9adc-0366f62596e2",
+      "name": "Short 2. TTS y Subtítulos Corto",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        3248,
+        48
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=python3 tools/render_cocina_short_video.py \"{{ $('1b. Parsear Scraper').first().json.project_dir || $('0b. Parsear Temática').first().json.project_dir }}\""
+      },
+      "id": "88138b0c-cbe1-417e-8faf-a07e083d7970",
+      "name": "Short 3. Renderizar Vídeo Vertical 9:16",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        3472,
+        48
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=python3 tools/generate_vs_short_metadata.py \"{{ $('1b. Parsear Scraper').first().json.project_dir }}\" --affiliate_tag \"{{ $('Configuración Parámetros').first().json.affiliate_tag }}\""
+      },
+      "id": "53d7bbba-7e89-45dc-834c-3126a2519cf2",
+      "name": "Short 4. Generar Metadatos Short",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        3696,
+        48
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let stdoutStr = $json.stdout || '';\nlet data = {};\ntry {\n    data = JSON.parse(stdoutStr);\n} catch(e) {}\n\nreturn [{\n    json: {\n        title: data.youtube_title || 'Nº 1 MEJOR PRODUCTO DE AMAZON 🏆 #Shorts',\n        description: data.youtube_description || 'Vídeo Short de productos Amazon',\n        tags_str: (data.tags || ['Shorts', 'amazon']).join(','),\n        pinned_comment: data.pinned_comment || '',\n        project_dir: $('Short 0. Preparar Prompt Short IA').first().json.project_dir || $('1b. Parsear Scraper').first().json.project_dir\n    }\n}];"
+      },
+      "id": "11bdea12-96a6-4d48-be3c-baeb3dfe60d1",
+      "name": "Short 5. Parsear Metadatos Short",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3920,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "filePath": "={{ ($json.project_dir || $('Short 0. Preparar Prompt Short IA').first().json.project_dir || $('1b. Parsear Scraper').first().json.project_dir).replace('/files', '/files') + '/RENDER_FINAL_SHORT_VERTICAL.mp4' }}"
+      },
+      "id": "55dfaa15-5edd-4c53-8a47-993378b43fe1",
+      "name": "Short 6. Convertir a Binario Short",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        4144,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "let projectDir = '';\ntry {\n    projectDir = $('1b. Parsear Scraper').first().json.project_dir;\n} catch (e1) {}\n\nif (!projectDir) {\n    try {\n        projectDir = $('0b. Parsear Temática').first().json.project_dir;\n    } catch (e2) {}\n}\n\nif (!projectDir) {\n    try {\n        projectDir = $input.first().json.project_dir;\n    } catch (e3) {}\n}\n\nlet containerDir = (projectDir || '').replace('/files', '/files');\nlet fs = require('fs');\n\n// ============================================================================\n// 🛡️ PRE-PUBLISH SANITY GATE (COMPROBACIÓN PREVENTIVA DE PUBLICACIÓN SHORT)\n// ============================================================================\nif (containerDir && fs.existsSync(containerDir)) {\n    let gateErrors = [];\n    const NICHE_BANNED = {\n        'taller': ['barbacoa', 'parrilla', 'bbq', 'pelo', 'cabello', 'afeitad', 'afeitadora', 'cortapelo', 'depilad', 'barba', 'dientes', 'dental', 'cocina', 'vajilla', 'sarten', 'sartén', 'olla', 'aspirador', 'colchon', 'mascota', 'fregadero', 'inodoro', 'champú'],\n        'barberia': ['madera', 'taller', 'taladro', 'sierra', 'bricolaje', 'jardin', 'cesped', 'cocina', 'sarten', 'freidora', 'aspirador', 'fregona', 'limpieza', 'coche'],\n        'cocina': ['taladro', 'sierra', 'amoladora', 'taller', 'pelo', 'afeitad', 'zapato', 'zapatilla', 'aspiradora', 'fregona', 'soldador'],\n        'limpieza': ['sarten', 'sartén', 'olla', 'cocina', 'taladro', 'sierra', 'zapato', 'zapatilla', 'libro', 'novela', 'barberia', 'afeitadora'],\n        'zapateria': ['aspiradora', 'freidora', 'sartén', 'taladro', 'sierra', 'libro', 'novela', 'afeitadora'],\n        'libreria': ['aspiradora', 'freidora', 'taladro', 'zapato', 'afeitadora', 'sarten', 'bateria de cocina']\n    };\n\n    let dirLow = containerDir.toLowerCase();\n    let niche = 'general';\n    if (dirLow.includes('taller') || dirLow.includes('bricolaje')) niche = 'taller';\n    else if (dirLow.includes('barber') || dirLow.includes('afeitad')) niche = 'barberia';\n    else if (dirLow.includes('cocina')) niche = 'cocina';\n    else if (dirLow.includes('limpiez')) niche = 'limpieza';\n    else if (dirLow.includes('zapat') || dirLow.includes('calzad')) niche = 'zapateria';\n    else if (dirLow.includes('librer') || dirLow.includes('libro')) niche = 'libreria';\n\n    let bannedList = NICHE_BANNED[niche] || [];\n\n    // 1. Validación de Guion del Short (short_script.json)\n    let sScriptPath = containerDir + '/short_script.json';\n    let qLow = '';\n    if (fs.existsSync(sScriptPath)) {\n        try {\n            let sData = JSON.parse(fs.readFileSync(sScriptPath, 'utf8'));\n            qLow = (sData.query || '').toLowerCase();\n            let sText = ((sData.hook || '') + ' ' + (sData.product || '') + ' ' + qLow).toLowerCase();\n            for (let b of bannedList) {\n                let re = new RegExp('\\\\b' + b + '\\\\b', 'i');\n                if (re.test(sText) && !qLow.includes(b)) {\n                    gateErrors.push(`[SHORT] Guion del Short contiene término ajeno al nicho ${niche}: '${b}'`);\n                }\n            }\n        } catch (eS) {\n            gateErrors.push(`Error analizando short_script.json: ${eS.message}`);\n        }\n    }\n\n    // 2. Validación de Productos en data.json (producto que nutre el Short)\n    let dataJsonPath = containerDir + '/data.json';\n    if (fs.existsSync(dataJsonPath)) {\n        try {\n            let dRaw = JSON.parse(fs.readFileSync(dataJsonPath, 'utf8'));\n            if (!qLow) qLow = (dRaw.query || '').toLowerCase();\n            let topProd = null;\n            if (dRaw.products && dRaw.products.length > 0) topProd = dRaw.products[0];\n            else if (dRaw.product_a) topProd = dRaw.product_a;\n\n            if (topProd) {\n                let pTitle = (topProd.title || '').toLowerCase();\n                for (let b of bannedList) {\n                    let re = new RegExp('\\\\b' + b + '\\\\b', 'i');\n                    if (re.test(pTitle) && !qLow.includes(b)) {\n                        gateErrors.push(`[SHORT] Producto Top usado en Short ajeno al nicho ${niche}: '${b}' en '${(topProd.title || '').substring(0, 45)}...'`);\n                    }\n                }\n            }\n        } catch (eD) {}\n    }\n\n    // 3. Validación de Vídeo Short Renderizado\n    let shortFiles = ['/RENDER_FINAL_SHORT_VERTICAL.mp4', '/short_video.mp4'];\n    let shortFound = false;\n    for (let sf of shortFiles) {\n        let vPath = containerDir + sf;\n        if (fs.existsSync(vPath)) {\n            let stat = fs.statSync(vPath);\n            if (stat.size > 500000) {\n                shortFound = true;\n                break;\n            }\n        }\n    }\n    if (!shortFound) {\n        gateErrors.push('[SHORT] Vídeo vertical renderizado ausente o corrupto (< 500KB).');\n    }\n\n    if (gateErrors.length > 0) {\n        throw new Error('[PRE-PUBLISH GATE BLOQUEADO - SHORT] ' + gateErrors.join(' | '));\n    }\n}\n\nlet meta = {};\ntry {\n    meta = $('Short 5. Parsear Metadatos Short').first().json;\n} catch(e) {}\n\nlet longVideoId = '';\ntry {\n    longVideoId = $('YT Upload YouTube').first().json.uploadId || $('YT Upload YouTube').first().json.id || '';\n} catch(e2) {}\n\nlet desc = meta.description || '';\nif (longVideoId) {\n    let longUrl = 'https://youtu.be/' + longVideoId;\n    desc = '🎬 COMPARATIVA COMPLETA (8-10 MIN): ' + longUrl + '\\n\\n' + desc;\n}\n\n// VS-specific fallback title\nlet shortTitle = meta.title || '';\nif (!shortTitle) {\n    try {\n        let pA = $('1b. Parsear Scraper').first().json.product_a || {};\n        let pB = $('1b. Parsear Scraper').first().json.product_b || {};\n        let bA = (pA.brand || 'A').toUpperCase();\n        let bB = (pB.brand || 'B').toUpperCase();\n        shortTitle = bA + ' vs ' + bB + ' en 60s ⚡ #Shorts';\n    } catch(e3) {\n        shortTitle = 'A vs B en 60 segundos ⚡ #Shorts';\n    }\n}\n\nconst items = $input.all();\nconst outItems = [];\nfor (let item of items) {\n    let newItem = {\n        json: {\n            ...item.json,\n            title: shortTitle,\n            description: desc,\n            tags_str: meta.tags_str || 'Shorts,comparativa,amazon,vs',\n            pinned_comment: meta.pinned_comment || ''\n        }\n    };\n    if (item.binary) newItem.binary = item.binary;\n    outItems.push(newItem);\n}\nreturn outItems;"
+      },
+      "id": "931393de-f7ce-4caa-9c68-e6ec89c4a13f",
+      "name": "Short 7. Preparar Payload Short Upload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4368,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $json.title }}",
+        "regionCode": "ES",
+        "categoryId": "26",
+        "options": {
+          "description": "={{ $json.description }}",
+          "privacyStatus": "public",
+          "publicStatsViewable": false,
+          "selfDeclaredMadeForKids": false,
+          "tags": "={{ $json.tags_str }}"
+        }
+      },
+      "id": "cf927755-0b38-479d-a2fc-5d1b2449b62f",
+      "name": "Short 8. Upload YouTube Short",
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        4592,
+        48
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-credential-id",
+          "name": "cocina"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Configuración Parámetros').first().json.telegram_chat_id }}",
+        "text": "=📱 *¡VÍDEO SHORT VERTICAL (9:16) PUBLICADO EN YOUTUBE!* 🚀\n\n📌 *Título:* {{ $('Short 5. Parsear Metadatos Short').first().json.title }}\n🔗 *Ver Short:* https://youtu.be/{{ $('Short 8. Upload YouTube Short').first().json.uploadId || $('Short 8. Upload YouTube Short').first().json.id || $json.id }}\n\n📊 *Canal:* {{ $('Configuración Parámetros').first().json.channel_name }}\n✅ *Formato:* Vertical 1080x1920 (<60s)",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "4287d675-58f4-4c68-8759-9c130fb585a7",
+      "name": "Short 9. Notificación Telegram Short",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4816,
+        48
+      ],
+      "webhookId": "596fce98-e93f-40e3-a0fe-d2fa8d679e8e",
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-credential-id",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let scraperJson = $('1b. Parsear Scraper').first().json || {};\nlet tematicaJson = $('0b. Parsear Temática').first().json || {};\nlet configJson = $('Configuración Parámetros').first().json || {};\n\nlet p_dir = scraperJson.project_dir || tematicaJson.project_dir || '';\nlet niche = configJson.channel_niche || '';\nlet query = tematicaJson.search_query || scraperJson.query || '';\n\nlet productA = scraperJson.product_a || {};\nlet productB = scraperJson.product_b || {};\nlet brandA = productA.brand || 'Marca A';\nlet brandB = productB.brand || 'Marca B';\nlet titleA = productA.title || 'Producto A';\nlet titleB = productB.title || 'Producto B';\nlet priceA = productA.price || 'Oferta';\nlet priceB = productB.price || 'Oferta';\nlet ratingA = productA.rating || '4.5';\nlet ratingB = productB.rating || '4.5';\n\nlet promptTextShort = `Nicho del canal: ${niche}\nTemática: ${query}\nFormato: COMPARATIVA A vs B\n\nPRODUCTO A: ${titleA} (${brandA})\nPrecio: ${priceA} | Rating: ${ratingA}\n\nPRODUCTO B: ${titleB} (${brandB})\nPrecio: ${priceB} | Rating: ${ratingB}\n\nGenera un guion corto de impacto (~110 palabras, <50 segundos) para un YouTube Short comparativo.\nEstructura:\n1. Hook impactante: pregunta directa \"¿${brandA} o ${brandB}?\"\n2. Dato clave de cada producto (1 frase por producto)\n3. Diferencia principal entre ambos\n4. CTA: \"¿Cuál elegirías TÚ? Comenta A o B\"`;\n\nreturn [{\n    json: {\n        project_dir: p_dir,\n        promptTextShort: promptTextShort,\n        format: 'vs',\n        product_a: productA,\n        product_b: productB\n    }\n}];"
+      },
+      "id": "78e048b0-645e-4953-a69b-8a04e64ff1b4",
+      "name": "Short 0. Preparar Prompt Short IA",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2432,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.promptTextShort }}",
+        "options": {
+          "systemMessage": "Eres un guionista experto en vídeos cortos estilo YouTube Shorts (9:16) en español sobre productos de Amazon.\nEscribe guiones ultra-dinámicos, persuasivos e impactantes de MÍNIMO 100 y MÁXIMO 120 PALABRAS para durar exactamente 45-50 segundos.\n\nPSICOLOGÍA DE VENTAS QUE DEBES APLICAR:\n- HOOK (0-5s): Captura la atención con Loss Aversion ('Antes de comprar sin comparar, no cometas el error de elegir a ciegas. Hay un modelo que destaca sobre el resto en Amazon en 2026.').\n- REVIEW EXPRÉS (5-45s): Revisa el producto #1 ganador destacando Social Proof (valoraciones de 5 estrellas) y precio exacto.\n- OUTRO / CTA (45-50s): Invita a ver la comparativa completa de 8 min con los 7 modelos en la descripción y el primer comentario.\n\nREGLAS OBLIGATORIAS:\n1. Escribe en ESPAÑOL.\n2. NO utilices emojis.\n3. Devuelve ÚNICAMENTE el JSON estructurado con las claves: hook, product, outro."
+        }
+      },
+      "id": "eaa803e0-71ad-48ef-b77c-629fa2184ac4",
+      "name": "Short 1. Generador Guion Short IA (Ollama)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        2672,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"hook\": \"¿Dudas entre Marca A o Marca B? No cometas el error de comprar a ciegas en Amazon.\",\n  \"product\": \"Marca A ofrece máxima durabilidad y acabados premium, mientras que Marca B destaca por su relación calidad-precio.\",\n  \"outro\": \"¿Tú cuál elegirías? Comenta A o B. Mira la comparativa completa de 8 minutos en el canal.\"\n}"
+      },
+      "id": "55247905-3ee9-4a47-9ff3-22662f2ea258",
+      "name": "Short Parser JSON",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        2672,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "command": "=p_dir=\"{{ $('1b. Parsear Scraper').first().json.project_dir || $('0b. Parsear Temática').first().json.project_dir }}\"\ncat << 'EOF' | python3 tools/save_vs_short_script.py \"$p_dir\"\n{{ JSON.stringify($json) }}\nEOF"
+      },
+      "id": "167b1f72-f49c-4dd5-a119-0a0a0d2ba7c8",
+      "name": "Short 1b. Guardar Guion Short JSON",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        3024,
+        48
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ssh-credential-id",
+          "name": "SSH Ordenador"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/youtube/v3/commentThreads?part=snippet",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "options": {},
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"snippet\": { \"videoId\": $('YT Upload YouTube').first().json.id || $('YT Upload YouTube').first().json.uploadId, \"topLevelComment\": { \"snippet\": { \"textOriginal\": $('YT Preparar Payload Upload').first().json.pinned_comment || $json.pinned_comment || '' } } } } }}"
+      },
+      "id": "yt-pinned-jYb2Pd8J",
+      "name": "YT Publicar Comentario Fijado",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5870,
+        -224
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-credential-id",
+          "name": "cocina"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/youtube/v3/commentThreads?part=snippet",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "options": {},
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"snippet\": { \"videoId\": $('Short 8. Upload YouTube Short').first().json.id || $('Short 8. Upload YouTube Short').first().json.uploadId, \"topLevelComment\": { \"snippet\": { \"textOriginal\": $('Short 7. Preparar Payload Short Upload').first().json.pinned_comment || '' } } } } }}"
+      },
+      "id": "short-pinned-jYb2Pd8J",
+      "name": "Short 8b. Comentario Fijado Short",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4702,
+        48
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-credential-id",
+          "name": "cocina"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://www.googleapis.com/youtube/v3/videos?part=status",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"id\": $('YT Upload YouTube').first().json.id || $('YT Upload YouTube').first().json.uploadId || $json.id, \"status\": { \"containsSyntheticMedia\": true, \"privacyStatus\": \"public\", \"selfDeclaredMadeForKids\": false } } }}",
+        "options": {}
+      },
+      "name": "YT Marcar Uso de IA Horizontal",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5880,
+        -224
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-credential-id",
+          "name": "cocina"
+        }
+      },
+      "id": "223124ca-a0da-4454-adff-f6399e0f642a"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://www.googleapis.com/youtube/v3/videos?part=status",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"id\": $('Short 8. Upload YouTube Short').first().json.id || $('Short 8. Upload YouTube Short').first().json.uploadId || $json.id, \"status\": { \"containsSyntheticMedia\": true, \"privacyStatus\": \"public\", \"selfDeclaredMadeForKids\": false } } }}",
+        "options": {}
+      },
+      "name": "Short 8a. Marcar Uso de IA Short",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4712,
+        48
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-credential-id",
+          "name": "cocina"
+        }
+      },
+      "id": "2bcbf122-5f75-43e6-b4e9-a22d5b65d769"
+    }
+  ],
+  "connections": {
+    "Webhook Trigger (Inicio)": {
+      "main": [
+        [
+          {
+            "node": "Configuración Parámetros",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Programador Autónomo (Opción A)": {
+      "main": [
+        [
+          {
+            "node": "Configuración Parámetros",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configuración Parámetros": {
+      "main": [
+        [
+          {
+            "node": "0. Elegir Temática Aleatoria IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "0. Elegir Temática Aleatoria IA": {
+      "main": [
+        [
+          {
+            "node": "0b. Parsear Temática",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "0b. Parsear Temática": {
+      "main": [
+        [
+          {
+            "node": "1. Scraper Amazon VS (2 Productos + Reseñas)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Scraper Amazon VS (2 Productos + Reseñas)": {
+      "main": [
+        [
+          {
+            "node": "1b. Parsear Scraper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1b. Parsear Scraper": {
+      "main": [
+        [
+          {
+            "node": "10. Generar Metadatos YouTube",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "10. Generar Metadatos YouTube": {
+      "main": [
+        [
+          {
+            "node": "YT Keyword Research SEO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT Keyword Research SEO": {
+      "main": [
+        [
+          {
+            "node": "YT Preparar Input Ollama",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT Preparar Input Ollama": {
+      "main": [
+        [
+          {
+            "node": "YT Optimizador SEO (Ollama)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT Parser SEO JSON": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "YT Optimizador SEO (Ollama)",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT Optimizador SEO (Ollama)": {
+      "main": [
+        [
+          {
+            "node": "YT Guardar Metadatos Optimizados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT Guardar Metadatos Optimizados": {
+      "main": [
+        [
+          {
+            "node": "YT Parsear Metadatos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT Parsear Metadatos": {
+      "main": [
+        [
+          {
+            "node": "YT Generador de Tags SEO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT Generador de Tags SEO": {
+      "main": [
+        [
+          {
+            "node": "2. Preparar Prompt Guion IA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Short 0. Preparar Prompt Short IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Preparar Prompt Guion IA": {
+      "main": [
+        [
+          {
+            "node": "3. Generador de Guiones IA (Ollama)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modelo Ollama (Qwen 3.8 27B)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "3. Generador de Guiones IA (Ollama)",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Parser de Estructura JSON",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Short 1. Generador Guion Short IA (Ollama)",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Short Parser JSON",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "YT Optimizador SEO (Ollama)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser de Estructura JSON": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "3. Generador de Guiones IA (Ollama)",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. Generador de Guiones IA (Ollama)": {
+      "main": [
+        [
+          {
+            "node": "4. Guardar Guion JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4. Guardar Guion JSON": {
+      "main": [
+        [
+          {
+            "node": "5. Generar Locución y Subtítulos por Producto (TTS)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5. Generar Locución y Subtítulos por Producto (TTS)": {
+      "main": [
+        [
+          {
+            "node": "6. Renderizar Vídeo Intro/Hook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6. Renderizar Vídeo Intro/Hook": {
+      "main": [
+        [
+          {
+            "node": "7. Renderizar Vídeos Productos A y B",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "7. Renderizar Vídeos Productos A y B": {
+      "main": [
+        [
+          {
+            "node": "8. Renderizar Vídeo Cierre/Outro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "8. Renderizar Vídeo Cierre/Outro": {
+      "main": [
+        [
+          {
+            "node": "9. Concatenar Vídeo Final NAS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "9. Concatenar Vídeo Final NAS": {
+      "main": [
+        [
+          {
+            "node": "YT Convertir a Binario n8n",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT Convertir a Binario n8n": {
+      "main": [
+        [
+          {
+            "node": "YT Preparar Payload Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT Preparar Payload Upload": {
+      "main": [
+        [
+          {
+            "node": "YT Upload YouTube",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT Upload YouTube": {
+      "main": [
+        [
+          {
+            "node": "YT Leer Miniatura SSH",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT Leer Miniatura SSH": {
+      "main": [
+        [
+          {
+            "node": "YT Convertir Miniatura Binario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT Convertir Miniatura Binario": {
+      "main": [
+        [
+          {
+            "node": "YT Subir Miniatura YouTube",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT Subir Miniatura YouTube": {
+      "main": [
+        [
+          {
+            "node": "YT Marcar Uso de IA Horizontal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT Preparar Texto Telegram": {
+      "main": [
+        [
+          {
+            "node": "Notificar Telegram Éxito",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notificar Telegram Éxito": {
+      "main": [
+        [
+          {
+            "node": "Avisar Éxito YouTube a Agente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Short 0. Preparar Prompt Short IA": {
+      "main": [
+        [
+          {
+            "node": "Short 1. Generador Guion Short IA (Ollama)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Short Parser JSON": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Short 1. Generador Guion Short IA (Ollama)",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Short 1. Generador Guion Short IA (Ollama)": {
+      "main": [
+        [
+          {
+            "node": "Short 1b. Guardar Guion Short JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Short 1b. Guardar Guion Short JSON": {
+      "main": [
+        [
+          {
+            "node": "Short 2. TTS y Subtítulos Corto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Short 2. TTS y Subtítulos Corto": {
+      "main": [
+        [
+          {
+            "node": "Short 3. Renderizar Vídeo Vertical 9:16",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Short 3. Renderizar Vídeo Vertical 9:16": {
+      "main": [
+        [
+          {
+            "node": "Short 4. Generar Metadatos Short",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Short 4. Generar Metadatos Short": {
+      "main": [
+        [
+          {
+            "node": "Short 5. Parsear Metadatos Short",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Short 5. Parsear Metadatos Short": {
+      "main": [
+        [
+          {
+            "node": "Short 6. Convertir a Binario Short",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Short 6. Convertir a Binario Short": {
+      "main": [
+        [
+          {
+            "node": "Short 7. Preparar Payload Short Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Short 7. Preparar Payload Short Upload": {
+      "main": [
+        [
+          {
+            "node": "Short 8. Upload YouTube Short",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Short 8. Upload YouTube Short": {
+      "main": [
+        [
+          {
+            "node": "Short 8a. Marcar Uso de IA Short",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Short 9. Notificación Telegram Short": {
+      "main": [
+        [
+          {
+            "node": "Avisar Éxito YouTube a Agente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Trigger Global": {
+      "main": [
+        [
+          {
+            "node": "Avisar Error a Agente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT Publicar Comentario Fijado": {
+      "main": [
+        [
+          {
+            "node": "YT Preparar Texto Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Short 8b. Comentario Fijado Short": {
+      "main": [
+        [
+          {
+            "node": "Short 9. Notificación Telegram Short",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT Marcar Uso de IA Horizontal": {
+      "main": [
+        [
+          {
+            "node": "YT Publicar Comentario Fijado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Short 8a. Marcar Uso de IA Short": {
+      "main": [
+        [
+          {
+            "node": "Short 8b. Comentario Fijado Short",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Madrid",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "binaryMode": "separate",
+    "saveManualExecutions": true
+  }
+}

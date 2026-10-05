@@ -1,0 +1,23 @@
+# =====================================================================
+# AI Affiliate Video Factory - Python Requirements
+# =====================================================================
+
+# Image & Visual Processing
+Pillow>=10.0.0
+
+# HTTP & API Communications
+requests>=2.31.0
+urllib3>=2.0.0
+
+# YouTube Data API & Google OAuth
+google-api-python-client>=2.100.0
+google-auth-oauthlib>=1.0.0
+google-auth-httplib2>=0.1.0
+
+# Configuration & Data Validation
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+
+# Audio & Scientific Compute (Optional for local TTS & Audio processing)
+scipy>=1.11.0
+soundfile>=0.12.0

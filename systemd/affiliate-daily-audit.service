@@ -1,0 +1,13 @@
+[Unit]
+Description=Daily Affiliate Channels Audit and AI Auto-Responder
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/n8n
+ExecStart=/usr/bin/python3 %h/n8n/tools/daily_affiliate_audit.py 24
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

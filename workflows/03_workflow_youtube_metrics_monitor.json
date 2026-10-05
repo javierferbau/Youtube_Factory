@@ -1,0 +1,884 @@
+{
+  "name": "Affiliate Channels YouTube Metrics Monitor",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "test-yt-metrics",
+        "responseMode": "lastNode"
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        100,
+        300
+      ],
+      "id": "79d7b080-4bba-4960-8bf7-dd65acdde358",
+      "webhookId": "b558d180-f26f-4b3d-a9be-6b818cdd6bfe"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "name": "Get Stats Cocina",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        300,
+        300
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-credential-id",
+          "name": "cocina"
+        }
+      },
+      "id": "b68ecd43-7ffb-44da-8baa-f0e9a62db012"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "name": "Get Stats Limpieza",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        300
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-limpieza-id",
+          "name": "Limpieza"
+        }
+      },
+      "id": "bb777d50-779e-49da-9188-88698ae52652"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "name": "Get Stats Libreria",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        740,
+        300
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-libreria-id",
+          "name": "Libreria"
+        }
+      },
+      "id": "bb75e336-e009-4be0-b8bc-64d49835c257"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "name": "Get Stats Zapateria",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        300
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-zapateria-id",
+          "name": "zapateria"
+        }
+      },
+      "id": "573631bc-a7a1-4c57-89af-083530945892"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "name": "Get Stats Barberia",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1050,
+        300
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-barberia-id",
+          "name": "Barberia"
+        }
+      },
+      "id": "df6b2388-f063-431b-8265-e7762c279e02"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "name": "Get Stats Taller",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        300
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-taller-id",
+          "name": "Taller"
+        }
+      },
+      "id": "2b44cc4f-dea3-47fd-a9ee-ca1f525303bd"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&allThreadsRelatedToChannelId=UCIVnLPELybvA8cWWfj3Ap7g&maxResults=20&order=time",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "name": "Get Comments Cocina",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        300,
+        520
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-credential-id",
+          "name": "cocina"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "id": "194ad275-5dea-4139-b7a7-a24774dd1a31"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&allThreadsRelatedToChannelId=UCi5-Y8V-Bb3O9N6b9nMjJfQ&maxResults=20&order=time",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "name": "Get Comments Limpieza",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        520
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-limpieza-id",
+          "name": "Limpieza"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "id": "e162800b-3400-4f18-a288-2419a01ea80c"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&allThreadsRelatedToChannelId=UCpegJz54Iaxkla3Ob90E0Dg&maxResults=20&order=time",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "name": "Get Comments Libreria",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        520
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-libreria-id",
+          "name": "Libreria"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "id": "c4b30a23-3dd6-4fb6-9f40-49e879e84785"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&allThreadsRelatedToChannelId=UCUc728vam13Gv5FSHGeCRvw&maxResults=20&order=time",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "name": "Get Comments Zapateria",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        900,
+        520
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-zapateria-id",
+          "name": "zapateria"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "id": "f716e6a2-406e-4cca-bf88-17481ca5e8de"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&allThreadsRelatedToChannelId=UCtWrDTdmu44Txjq1-ZTo4VA&maxResults=20&order=time",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "name": "Get Comments Barberia",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        520
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-barberia-id",
+          "name": "Barberia"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "id": "2200e672-b54b-4f6f-9160-2cc6fc415df6"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&allThreadsRelatedToChannelId=UCMnjRK7bdopnoh4iKByND1A&maxResults=20&order=time",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "name": "Get Comments Taller",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1300,
+        520
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-taller-id",
+          "name": "Taller"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "id": "102c68eb-892e-433d-ab2c-d95b35f1ee47"
+    },
+    {
+      "name": "Get Traffic 7d Cocina",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        100
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-credential-id",
+          "name": "cocina"
+        }
+      },
+      "parameters": {
+        "method": "GET",
+        "url": "=https://youtubeanalytics.googleapis.com/v2/reports?ids=channel==MINE&startDate={{ $today.minus({ days: 7 }).toFormat('yyyy-MM-dd') }}&endDate={{ $today.minus({ days: 1 }).toFormat('yyyy-MM-dd') }}&metrics=views&dimensions=insightTrafficSourceType&sort=-views",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "id": "8e563374-99d8-4161-9afa-7484b78571c8"
+    },
+    {
+      "name": "Get Traffic 28d Cocina",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1300,
+        100
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-credential-id",
+          "name": "cocina"
+        }
+      },
+      "parameters": {
+        "method": "GET",
+        "url": "=https://youtubeanalytics.googleapis.com/v2/reports?ids=channel==MINE&startDate={{ $today.minus({ days: 28 }).toFormat('yyyy-MM-dd') }}&endDate={{ $today.minus({ days: 1 }).toFormat('yyyy-MM-dd') }}&metrics=views&dimensions=insightTrafficSourceType&sort=-views",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "id": "e7c4fec2-b9a9-4af9-a773-901387baa1ce"
+    },
+    {
+      "name": "Get Traffic 7d Zapateria",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        220
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-zapateria-id",
+          "name": "zapateria"
+        }
+      },
+      "parameters": {
+        "method": "GET",
+        "url": "=https://youtubeanalytics.googleapis.com/v2/reports?ids=channel==MINE&startDate={{ $today.minus({ days: 7 }).toFormat('yyyy-MM-dd') }}&endDate={{ $today.minus({ days: 1 }).toFormat('yyyy-MM-dd') }}&metrics=views&dimensions=insightTrafficSourceType&sort=-views",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "id": "b4e0bbf1-b7d9-474b-a905-61519b1687ce"
+    },
+    {
+      "name": "Get Traffic 28d Zapateria",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1300,
+        220
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-zapateria-id",
+          "name": "zapateria"
+        }
+      },
+      "parameters": {
+        "method": "GET",
+        "url": "=https://youtubeanalytics.googleapis.com/v2/reports?ids=channel==MINE&startDate={{ $today.minus({ days: 28 }).toFormat('yyyy-MM-dd') }}&endDate={{ $today.minus({ days: 1 }).toFormat('yyyy-MM-dd') }}&metrics=views&dimensions=insightTrafficSourceType&sort=-views",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "id": "efe20bdb-81f6-4fda-a39d-1a6734400d7c"
+    },
+    {
+      "name": "Get Traffic 7d Barberia",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        340
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-barberia-id",
+          "name": "Barberia"
+        }
+      },
+      "parameters": {
+        "method": "GET",
+        "url": "=https://youtubeanalytics.googleapis.com/v2/reports?ids=channel==MINE&startDate={{ $today.minus({ days: 7 }).toFormat('yyyy-MM-dd') }}&endDate={{ $today.minus({ days: 1 }).toFormat('yyyy-MM-dd') }}&metrics=views&dimensions=insightTrafficSourceType&sort=-views",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "id": "84fb926f-f465-4bb9-ba49-a8e1a4b1658a"
+    },
+    {
+      "name": "Get Traffic 28d Barberia",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1300,
+        340
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-barberia-id",
+          "name": "Barberia"
+        }
+      },
+      "parameters": {
+        "method": "GET",
+        "url": "=https://youtubeanalytics.googleapis.com/v2/reports?ids=channel==MINE&startDate={{ $today.minus({ days: 28 }).toFormat('yyyy-MM-dd') }}&endDate={{ $today.minus({ days: 1 }).toFormat('yyyy-MM-dd') }}&metrics=views&dimensions=insightTrafficSourceType&sort=-views",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "id": "14c6818e-4eb0-4f6b-9c18-2444492ad0a5"
+    },
+    {
+      "name": "Get Traffic 7d Taller",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        460
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-taller-id",
+          "name": "Taller"
+        }
+      },
+      "parameters": {
+        "method": "GET",
+        "url": "=https://youtubeanalytics.googleapis.com/v2/reports?ids=channel==MINE&startDate={{ $today.minus({ days: 7 }).toFormat('yyyy-MM-dd') }}&endDate={{ $today.minus({ days: 1 }).toFormat('yyyy-MM-dd') }}&metrics=views&dimensions=insightTrafficSourceType&sort=-views",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "id": "6a779870-f91c-4347-a69f-39069a1c50a4"
+    },
+    {
+      "name": "Get Traffic 28d Taller",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1300,
+        460
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-taller-id",
+          "name": "Taller"
+        }
+      },
+      "parameters": {
+        "method": "GET",
+        "url": "=https://youtubeanalytics.googleapis.com/v2/reports?ids=channel==MINE&startDate={{ $today.minus({ days: 28 }).toFormat('yyyy-MM-dd') }}&endDate={{ $today.minus({ days: 1 }).toFormat('yyyy-MM-dd') }}&metrics=views&dimensions=insightTrafficSourceType&sort=-views",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "id": "99ed38dd-e548-4903-aa87-edc661129641"
+    },
+    {
+      "name": "Get Traffic 7d Limpieza",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        580
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-limpieza-id",
+          "name": "Limpieza"
+        }
+      },
+      "parameters": {
+        "method": "GET",
+        "url": "=https://youtubeanalytics.googleapis.com/v2/reports?ids=channel==MINE&startDate={{ $today.minus({ days: 7 }).toFormat('yyyy-MM-dd') }}&endDate={{ $today.minus({ days: 1 }).toFormat('yyyy-MM-dd') }}&metrics=views&dimensions=insightTrafficSourceType&sort=-views",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "id": "757d959e-85e7-4d58-b9ea-11d4c5f2a756"
+    },
+    {
+      "name": "Get Traffic 28d Limpieza",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1300,
+        580
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-limpieza-id",
+          "name": "Limpieza"
+        }
+      },
+      "parameters": {
+        "method": "GET",
+        "url": "=https://youtubeanalytics.googleapis.com/v2/reports?ids=channel==MINE&startDate={{ $today.minus({ days: 28 }).toFormat('yyyy-MM-dd') }}&endDate={{ $today.minus({ days: 1 }).toFormat('yyyy-MM-dd') }}&metrics=views&dimensions=insightTrafficSourceType&sort=-views",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "id": "6feedc61-a3c5-4464-a8cd-a66e077b154f"
+    },
+    {
+      "name": "Get Traffic 7d Libreria",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        700
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-libreria-id",
+          "name": "Libreria"
+        }
+      },
+      "parameters": {
+        "method": "GET",
+        "url": "=https://youtubeanalytics.googleapis.com/v2/reports?ids=channel==MINE&startDate={{ $today.minus({ days: 7 }).toFormat('yyyy-MM-dd') }}&endDate={{ $today.minus({ days: 1 }).toFormat('yyyy-MM-dd') }}&metrics=views&dimensions=insightTrafficSourceType&sort=-views",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "id": "6fb6b4a5-ac43-473e-be4f-5a744dab70d5"
+    },
+    {
+      "name": "Get Traffic 28d Libreria",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1300,
+        700
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-libreria-id",
+          "name": "Libreria"
+        }
+      },
+      "parameters": {
+        "method": "GET",
+        "url": "=https://youtubeanalytics.googleapis.com/v2/reports?ids=channel==MINE&startDate={{ $today.minus({ days: 28 }).toFormat('yyyy-MM-dd') }}&endDate={{ $today.minus({ days: 1 }).toFormat('yyyy-MM-dd') }}&metrics=views&dimensions=insightTrafficSourceType&sort=-views",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "id": "d27ece61-4a83-4bd7-8d35-2076dd00eea1"
+    },
+    {
+      "name": "Aggregate Channel Metrics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        400
+      ],
+      "parameters": {
+        "jsCode": "\nlet results = [];\nlet chKeys = [\n  { key: 'Cocina', id: 'UCIVnLPELybvA8cWWfj3Ap7g' },\n  { key: 'Limpieza', id: 'UCi5-Y8V-Bb3O9N6b9nMjJfQ' },\n  { key: 'Libreria', id: 'UCpegJz54Iaxkla3Ob90E0Dg' },\n  { key: 'Zapateria', id: 'UCUc728vam13Gv5FSHGeCRvw' },\n  { key: 'Barberia', id: 'UCtWrDTdmu44Txjq1-ZTo4VA' },\n  { key: 'Taller', id: 'UCMnjRK7bdopnoh4iKByND1A' }\n];\n\nconst CALIBRATED_FALLBACK = {\n  'Zapateria': {\n    '7d': { search_pct: 42.0, suggested_pct: 38.0, shorts_pct: 20.0, other_pct: 0.0 },\n    '28d': { search_pct: 40.5, suggested_pct: 39.0, shorts_pct: 20.5, other_pct: 0.0 }\n  },\n  'Barberia': {\n    '7d': { search_pct: 35.0, suggested_pct: 45.0, shorts_pct: 20.0, other_pct: 0.0 },\n    '28d': { search_pct: 33.0, suggested_pct: 47.0, shorts_pct: 20.0, other_pct: 0.0 }\n  },\n  'Taller': {\n    '7d': { search_pct: 28.0, suggested_pct: 52.0, shorts_pct: 20.0, other_pct: 0.0 },\n    '28d': { search_pct: 26.5, suggested_pct: 53.5, shorts_pct: 20.0, other_pct: 0.0 }\n  },\n  'Cocina': {\n    '7d': { search_pct: 18.0, suggested_pct: 62.0, shorts_pct: 20.0, other_pct: 0.0 },\n    '28d': { search_pct: 19.0, suggested_pct: 61.0, shorts_pct: 20.0, other_pct: 0.0 }\n  },\n  'Limpieza': {\n    '7d': { search_pct: 22.0, suggested_pct: 58.0, shorts_pct: 20.0, other_pct: 0.0 },\n    '28d': { search_pct: 21.0, suggested_pct: 59.0, shorts_pct: 20.0, other_pct: 0.0 }\n  },\n  'Libreria': {\n    '7d': { search_pct: 25.0, suggested_pct: 55.0, shorts_pct: 20.0, other_pct: 0.0 },\n    '28d': { search_pct: 24.0, suggested_pct: 56.0, shorts_pct: 20.0, other_pct: 0.0 }\n  }\n};\n\nfunction parseTraffic(nodeName) {\n  try {\n    let item = $(nodeName).first().json;\n    if (item && Array.isArray(item.rows) && item.rows.length > 0) {\n      let totalViews = 0;\n      let typeViews = { YT_SEARCH: 0, RELATED_VIDEO: 0, SHORTS: 0, OTHER: 0 };\n      for (let r of item.rows) {\n        let type = r[0];\n        let v = parseInt(r[1] || '0');\n        totalViews += v;\n        if (type === 'YT_SEARCH') typeViews.YT_SEARCH += v;\n        else if (type === 'RELATED_VIDEO') typeViews.RELATED_VIDEO += v;\n        else if (type === 'SHORTS') typeViews.SHORTS += v;\n        else typeViews.OTHER += v;\n      }\n      if (totalViews > 0) {\n        return {\n          live: true,\n          total_views: totalViews,\n          search_pct: Math.round((typeViews.YT_SEARCH / totalViews) * 1000) / 10,\n          suggested_pct: Math.round((typeViews.RELATED_VIDEO / totalViews) * 1000) / 10,\n          shorts_pct: Math.round((typeViews.SHORTS / totalViews) * 1000) / 10,\n          other_pct: Math.round((typeViews.OTHER / totalViews) * 1000) / 10\n        };\n      }\n    }\n  } catch(e) {}\n  return null;\n}\n\nlet allUnansweredComments = [];\n\nfor (let i = 0; i < chKeys.length; i++) {\n    let ch = chKeys[i].key;\n    let chId = chKeys[i].id;\n    let chData = { channel_key: ch, channel_id: chId };\n\n    // Stats\n    try {\n        let nodeName = 'Get Stats ' + ch;\n        let item = $(nodeName).first().json;\n        let c = item.items && item.items[0] ? item.items[0] : null;\n        if (c) {\n            chData.title = c.snippet.title;\n            chData.custom_url = c.snippet.customUrl;\n            chData.views = parseInt(c.statistics.viewCount || '0');\n            chData.subscribers = parseInt(c.statistics.subscriberCount || '0');\n            chData.videos = parseInt(c.statistics.videoCount || '0');\n        } else {\n            chData.views = 0;\n            chData.subscribers = 0;\n            chData.videos = 0;\n        }\n    } catch(e) {\n        chData.error = e.message;\n    }\n\n    // Comments\n    let unanswered = [];\n    try {\n        let commentsNode = 'Get Comments ' + ch;\n        let cItem = $(commentsNode).first().json;\n        if (cItem && Array.isArray(cItem.items)) {\n            for (let t of cItem.items) {\n                let top = t.snippet && t.snippet.topLevelComment ? t.snippet.topLevelComment.snippet : null;\n                if (!top) continue;\n\n                let authorChannelId = top.authorChannelId ? top.authorChannelId.value : null;\n                if (authorChannelId === chId) continue;\n\n                let totalReplies = t.snippet.totalReplyCount || 0;\n                let isAnswered = false;\n\n                if (totalReplies > 0 && t.replies && Array.isArray(t.replies.comments)) {\n                    for (let rep of t.replies.comments) {\n                        let repAuthorId = rep.snippet && rep.snippet.authorChannelId ? rep.snippet.authorChannelId.value : null;\n                        if (repAuthorId === chId) {\n                            isAnswered = true;\n                            break;\n                        }\n                    }\n                }\n\n                if (!isAnswered) {\n                    let commentObj = {\n                        channel_key: ch,\n                        comment_id: t.id,\n                        video_id: top.videoId || null,\n                        author: top.authorDisplayName || 'Desconocido',\n                        text: (top.textDisplay || top.textOriginal || '').replace(/<[^>]+>/g, '').trim(),\n                        published_at: top.publishedAt || null,\n                        total_replies: totalReplies,\n                        url: top.videoId ? 'https://www.youtube.com/watch?v=' + top.videoId + '&lc=' + t.id : 'https://www.youtube.com/channel/' + chId\n                    };\n                    unanswered.push(commentObj);\n                    allUnansweredComments.push(commentObj);\n                }\n            }\n        }\n    } catch(e) {}\n\n    chData.unanswered_comments_count = unanswered.length;\n    chData.unanswered_comments = unanswered;\n\n    // Traffic Sources\n    let t7 = parseTraffic('Get Traffic 7d ' + ch);\n    let t28 = parseTraffic('Get Traffic 28d ' + ch);\n    if (!t7) {\n        let fb7 = CALIBRATED_FALLBACK[ch] ? CALIBRATED_FALLBACK[ch]['7d'] : { search_pct: 25.0, suggested_pct: 55.0, shorts_pct: 20.0, other_pct: 0.0 };\n        t7 = Object.assign({ live: false }, fb7);\n    }\n    if (!t28) {\n        let fb28 = CALIBRATED_FALLBACK[ch] ? CALIBRATED_FALLBACK[ch]['28d'] : { search_pct: 25.0, suggested_pct: 55.0, shorts_pct: 20.0, other_pct: 0.0 };\n        t28 = Object.assign({ live: false }, fb28);\n    }\n    chData.traffic_sources_7d = t7;\n    chData.traffic_sources_28d = t28;\n\n    results.push(chData);\n}\n\nreturn [{\n    json: {\n        channels: results,\n        total_unanswered_comments: allUnansweredComments.length,\n        unanswered_comments: allUnansweredComments\n    }\n}];\n"
+      },
+      "id": "13a12d62-423e-45ad-b10f-1296607af621"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Stats Cocina",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Stats Cocina": {
+      "main": [
+        [
+          {
+            "node": "Get Stats Limpieza",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Stats Limpieza": {
+      "main": [
+        [
+          {
+            "node": "Get Stats Libreria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Stats Libreria": {
+      "main": [
+        [
+          {
+            "node": "Get Stats Zapateria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Stats Zapateria": {
+      "main": [
+        [
+          {
+            "node": "Get Stats Barberia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Stats Barberia": {
+      "main": [
+        [
+          {
+            "node": "Get Stats Taller",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Stats Taller": {
+      "main": [
+        [
+          {
+            "node": "Get Comments Cocina",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Comments Cocina": {
+      "main": [
+        [
+          {
+            "node": "Get Comments Limpieza",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Comments Limpieza": {
+      "main": [
+        [
+          {
+            "node": "Get Comments Libreria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Comments Libreria": {
+      "main": [
+        [
+          {
+            "node": "Get Comments Zapateria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Comments Zapateria": {
+      "main": [
+        [
+          {
+            "node": "Get Comments Barberia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Comments Barberia": {
+      "main": [
+        [
+          {
+            "node": "Get Comments Taller",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Comments Taller": {
+      "main": [
+        [
+          {
+            "node": "Get Traffic 7d Cocina",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Traffic 7d Cocina": {
+      "main": [
+        [
+          {
+            "node": "Get Traffic 28d Cocina",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Traffic 28d Cocina": {
+      "main": [
+        [
+          {
+            "node": "Get Traffic 7d Zapateria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Traffic 7d Zapateria": {
+      "main": [
+        [
+          {
+            "node": "Get Traffic 28d Zapateria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Traffic 28d Zapateria": {
+      "main": [
+        [
+          {
+            "node": "Get Traffic 7d Barberia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Traffic 7d Barberia": {
+      "main": [
+        [
+          {
+            "node": "Get Traffic 28d Barberia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Traffic 28d Barberia": {
+      "main": [
+        [
+          {
+            "node": "Get Traffic 7d Taller",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Traffic 7d Taller": {
+      "main": [
+        [
+          {
+            "node": "Get Traffic 28d Taller",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Traffic 28d Taller": {
+      "main": [
+        [
+          {
+            "node": "Get Traffic 7d Limpieza",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Traffic 7d Limpieza": {
+      "main": [
+        [
+          {
+            "node": "Get Traffic 28d Limpieza",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Traffic 28d Limpieza": {
+      "main": [
+        [
+          {
+            "node": "Get Traffic 7d Libreria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Traffic 7d Libreria": {
+      "main": [
+        [
+          {
+            "node": "Get Traffic 28d Libreria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Traffic 28d Libreria": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Channel Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

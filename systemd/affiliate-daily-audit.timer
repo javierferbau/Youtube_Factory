@@ -1,0 +1,9 @@
+[Unit]
+Description=Timer for Daily Affiliate Channels Audit (08:00 AM)
+
+[Timer]
+OnCalendar=*-*-* 08:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

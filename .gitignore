@@ -1,0 +1,104 @@
+# =====================================================================
+# AI Affiliate Video Factory - Git Ignore Rules
+# =====================================================================
+
+# Core dumps and system memory dumps
+gpucore.*
+core.*
+*.core
+*.dump
+
+# Python virtual environments & build artifacts
+venv
+venv/
+venv_gpu/
+venv_old_cpu/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+dist/
+*.egg-info/
+
+# Databases & SQLite files
+*.sqlite
+*.sqlite3
+*.db
+database.sqlite
+
+# Scratch files, test execution dumps and local logs
+scratch/
+scratch_*
+*.log
+*.tmp
+*.temp
+.DS_Store
+.agents/
+.codegraph/
+
+# Secrets, private tokens, cookies and local history
+.env
+.env.*
+!.env.example
+*_AUTO_COOKIES.json
+*cookie*.json
+*token*.json
+*secret*.json
+credentials.json
+client_secrets.json
+answered_comments_history.json
+youtube_performance_history.json
+
+# Tool archives, browser profiles, test outputs and heavy models
+tools/archive/
+tools/data/
+tools/test_output/
+tools/models/
+
+# Backup and temp files
+*.bak
+*.bak_*
+*.backup.*
+*.pre_squirrel_fix.json
+tools/backup_*
+backup_*.json
+Notas.txt
+
+# Loose root workflow dumps and temporary metadata
+/workflow_*.json
+/Gk7AsGpOPt9LeArk*.json
+/youtube_metadata.*
+
+# 3D render outputs
+3D/output
+
+# Media output renders
+*.mp4
+*.mkv
+*.avi
+*.mov
+*.webm
+
+# 3D test artifacts and output test folders
+3D/canal_*
+3D/nombrecustomdecanal*
+tools/output_test/
+
+# Legacy test scripts and external 3D experiments
+install_hermes_system.sh
+3D/
+
+# Local legacy PC scripts containing LAN IPs
+render_pc_amd.py
+
+# Internal local database and workflow migration scripts
+tools/update_*
+tools/upgrade_*
+tools/setup_*
+tools/upload_thumb_direct.py
+tools/workflow_*_updated.json
+tools/test_affiliate_workflows_unit.py
+tools/create_telegram_notifier.py

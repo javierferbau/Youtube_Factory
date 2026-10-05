@@ -1,0 +1,443 @@
+{
+  "name": "Affiliate YouTube Comments Auto-Responder",
+  "nodes": [
+    {
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        200,
+        300
+      ],
+      "webhookId": "reply-yt-comment",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "reply-yt-comment",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "abd1261b-7929-4e23-8bab-88a80efd5292"
+    },
+    {
+      "name": "Switch Channel",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        450,
+        300
+      ],
+      "parameters": {
+        "mode": "rules",
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.channel_key || $json.channel_key }}",
+                    "rightValue": "Cocina",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.channel_key || $json.channel_key }}",
+                    "rightValue": "Zapateria",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.channel_key || $json.channel_key }}",
+                    "rightValue": "Barberia",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.channel_key || $json.channel_key }}",
+                    "rightValue": "Taller",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.channel_key || $json.channel_key }}",
+                    "rightValue": "Limpieza",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.channel_key || $json.channel_key }}",
+                    "rightValue": "Libreria",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        }
+      },
+      "id": "4c60370e-5dfd-47e4-af77-f0acdccb3b90"
+    },
+    {
+      "name": "Post Reply Cocina",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        750,
+        100
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-credential-id",
+          "name": "cocina"
+        }
+      },
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/youtube/v3/comments?part=snippet",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"snippet\": { \"parentId\": $('Webhook').first().json.body.comment_id || $('Webhook').first().json.comment_id, \"textOriginal\": $('Webhook').first().json.body.reply_text || $('Webhook').first().json.reply_text } } }}",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "id": "8da7805d-ea27-4f95-ba71-84e32de348aa"
+    },
+    {
+      "name": "Post Reply Zapateria",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        750,
+        220
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-zapateria-id",
+          "name": "zapateria"
+        }
+      },
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/youtube/v3/comments?part=snippet",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"snippet\": { \"parentId\": $('Webhook').first().json.body.comment_id || $('Webhook').first().json.comment_id, \"textOriginal\": $('Webhook').first().json.body.reply_text || $('Webhook').first().json.reply_text } } }}",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "id": "27bd9964-4190-4459-adbd-1965a466d6ab"
+    },
+    {
+      "name": "Post Reply Barberia",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        750,
+        340
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-barberia-id",
+          "name": "Barberia"
+        }
+      },
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/youtube/v3/comments?part=snippet",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"snippet\": { \"parentId\": $('Webhook').first().json.body.comment_id || $('Webhook').first().json.comment_id, \"textOriginal\": $('Webhook').first().json.body.reply_text || $('Webhook').first().json.reply_text } } }}",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "id": "d8662d02-1c11-4f93-88c0-992d5edb5f71"
+    },
+    {
+      "name": "Post Reply Taller",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        750,
+        460
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-taller-id",
+          "name": "Taller"
+        }
+      },
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/youtube/v3/comments?part=snippet",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"snippet\": { \"parentId\": $('Webhook').first().json.body.comment_id || $('Webhook').first().json.comment_id, \"textOriginal\": $('Webhook').first().json.body.reply_text || $('Webhook').first().json.reply_text } } }}",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "id": "bc2a4c87-bfac-42e1-b6d4-57750af72995"
+    },
+    {
+      "name": "Post Reply Limpieza",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        750,
+        580
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-limpieza-id",
+          "name": "Limpieza"
+        }
+      },
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/youtube/v3/comments?part=snippet",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"snippet\": { \"parentId\": $('Webhook').first().json.body.comment_id || $('Webhook').first().json.comment_id, \"textOriginal\": $('Webhook').first().json.body.reply_text || $('Webhook').first().json.reply_text } } }}",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "id": "c6ae4db3-eaa7-481a-9ff1-52894573a331"
+    },
+    {
+      "name": "Post Reply Libreria",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        750,
+        700
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "youtube-libreria-id",
+          "name": "Libreria"
+        }
+      },
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/youtube/v3/comments?part=snippet",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"snippet\": { \"parentId\": $('Webhook').first().json.body.comment_id || $('Webhook').first().json.comment_id, \"textOriginal\": $('Webhook').first().json.body.reply_text || $('Webhook').first().json.reply_text } } }}",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "id": "fa4182e6-e2dd-44f5-bf9e-7c8e1e724ea6"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch Channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Channel": {
+      "main": [
+        [
+          {
+            "node": "Post Reply Cocina",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Post Reply Zapateria",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Post Reply Barberia",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Post Reply Taller",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Post Reply Limpieza",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Post Reply Libreria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

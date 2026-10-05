@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "skills": {
+    "caveman": {
+      "source": "juliusbrussee/caveman",
+      "sourceType": "github",
+      "skillPath": "caveman/SKILL.md",
+      "computedHash": "a818cdc41dcfaa50dd891c5cb5e5705968338de02e7e37949ca56e8c30ad4176"
+    },
+    "copywriting": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/copywriting/SKILL.md",
+      "computedHash": "779f05c8be67da475e6a7af78de3e0400b0038e371ce898dd6ff9d3331aab7db"
+    },
+    "copywriting-hooks": {
+      "source": "samber/cc-skills",
+      "sourceType": "github",
+      "skillPath": "skills/copywriting-hooks/SKILL.md",
+      "computedHash": "08c787afa5f4362f1ee9b1a2dd2fe9d4d5a19bfe1ef51e34cb20471052821728"
+    },
+    "higgsfield-youtube-thumbnail": {
+      "source": "higgsfield-ai/skills",
+      "sourceType": "github",
+      "skillPath": "higgsfield-youtube-thumbnail/SKILL.md",
+      "computedHash": "aade6ad4febf121bfd20feefb21c4e838043ac3d08edb33ea9e2574569d4b381"
+    },
+    "marketing-psychology": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/marketing-psychology/SKILL.md",
+      "computedHash": "50d735eb0f5c36f379ed2200f21aeacc9b9ad85667b5d33ec6111857352a1340"
+    },
+    "n8n-workflow": {
+      "source": "claude-office-skills/skills",
+      "sourceType": "github",
+      "skillPath": "n8n-workflow/SKILL.md",
+      "computedHash": "3923e1fbf10b8b53ff4c82f9e56a03aa69dd874cc51b04639b064de44dfcb000"
+    },
+    "video-edit": {
+      "source": "genmedia-labs/skills",
+      "sourceType": "github",
+      "skillPath": "video-edit/SKILL.md",
+      "computedHash": "8db3460bb7f1d42e6f6e4ebf90054b9da161ce71de0a27c1020ba53c937c57cc"
+    },
+    "youtube-research": {
+      "source": "postplusai/postplus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-research/youtube-research/SKILL.md",
+      "computedHash": "0370528ad1445046f7e786009eb7176a8620e2b83f96f57b3c66b36da6e0b94c"
+    },
+    "youtube-seo": {
+      "source": "kostja94/marketing-skills",
+      "sourceType": "github",
+      "skillPath": "skills/platforms/youtube/SKILL.md",
+      "computedHash": "2233fea25e273835753e733115cecddd6a566d7e09c3f26e1a265e2ab7335e53"
+    }
+  }
+}
